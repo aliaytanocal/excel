@@ -1,19 +1,20 @@
-Private Sub Worksheet_Change(ByVal Target As Range)
-    Dim rngCheck As Range
-    Dim cel As Range
-    Dim LastRow As Long
+Sub CheckForDuplicates()
     Dim ws As Worksheet
+    Dim lastRow As Long
+    Dim i As Long, j As Long
     
-    Set rngCheck = Range("A1:C1")
-    
-    For Each ws In ThisWorkbook.Worksheets
-        LastRow = ws.Cells(ws.Rows.Count, "A").End(xlUp).Row
-        For Each cel In ws.Range("A1:C" & LastRow)
-            If Not Intersect(cel, rngCheck) Is Nothing Then
-                If WorksheetFunction.CountIf(rngCheck, cel.Value) > 1 Then
-                    MsgBox "Dikkat! Mükerrer kayıt: " & cel.Value, vbInformation, "Uyarı"
+    For Each ws In Worksheets
+        lastRow = ws.Cells(Rows.Count, 1).End(xlUp).Row
+        
+        For i = 1 To lastRow
+            For j = i + 1 To lastRow
+                If ws.Cells(i, 1).Value = ws.Cells(j, 1).Value And ws.Cells(i, 3).Value = ws.Cells(j, 3).Value Then
+                    MsgBox "Mükerrer kayıt tespit edildi: " & ws.Name & " sayfasında A" & i & ":C" & i & " ve A" & j & ":C" & j & " hücreleri arasında.", vbExclamation, "Mükerrer Kayıt Uyarısı"
+                    Exit Sub
                 End If
-            End If
-        Next cel
+            Next j
+        Next i
     Next ws
+    
+    MsgBox "Mükerrer kayıt tespit edilmedi.", vbInformation, "Mükerrer Kayıt Uyarısı"
 End Sub
